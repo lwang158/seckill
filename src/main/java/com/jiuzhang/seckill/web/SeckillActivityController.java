@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -51,5 +52,13 @@ public class SeckillActivityController {
         seckillActivityDao.inertSeckillActivity(seckillActivity);
         resultMap.put("seckillActivity", seckillActivity);
         return "add_success";
+    }
+    @RequestMapping("/seckills")
+    public String activityList(Map<String, Object> resultMap) { // resultMap 这个对象是谁初始化的？
+        List<SeckillActivity> seckillActivities =
+                seckillActivityDao.querySeckillActivitysByStatus(1);
+        // 这个query函数的返回list是在哪里做的？怎么把数据库的记录放到list中的？ 是SeckillActivityMapper.xml中的sql语句做的么？还是Mapper类做的？
+        resultMap.put("seckillActivities", seckillActivities);
+        return "seckill_activity";
     }
 }
