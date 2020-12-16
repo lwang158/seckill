@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 @Controller
 public class SeckillActivityController {
@@ -31,7 +32,8 @@ public class SeckillActivityController {
             @RequestParam("oldPrice") BigDecimal oldPrice,
             @RequestParam("seckillNumber") long seckillNumber,
             @RequestParam("startTime") String startTime,
-            @RequestParam("endTime") String endTime
+            @RequestParam("endTime") String endTime,
+            Map<String, Object> resultMap
     ) throws ParseException {
         startTime = startTime.substring(0, 10) + startTime.substring(11);
         endTime = endTime.substring(0, 10) + endTime.substring(11);
@@ -48,6 +50,7 @@ public class SeckillActivityController {
         seckillActivity.setStartTime(format.parse(startTime));
         seckillActivity.setEndTime(format.parse(endTime));
         seckillActivityDao.inertSeckillActivity(seckillActivity);
-        return seckillActivity.toString();
+        resultMap.put("seckillActivity", seckillActivity);
+        return "add_success";
     }
 }
