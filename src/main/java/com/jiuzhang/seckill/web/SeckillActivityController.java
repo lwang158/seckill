@@ -1,9 +1,12 @@
 package com.jiuzhang.seckill.web;
 
 import com.jiuzhang.seckill.db.dao.SeckillActivityDao;
+import com.jiuzhang.seckill.db.dao.SeckillCommodityDao;
 import com.jiuzhang.seckill.db.po.SeckillActivity;
+import com.jiuzhang.seckill.db.po.SeckillCommodity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,6 +25,9 @@ public class SeckillActivityController {
 
     @Autowired
     private SeckillActivityDao seckillActivityDao;
+
+    @Autowired
+    private SeckillCommodityDao seckillCommodityDao;
 
     //@ResponseBody
     @RequestMapping("/addSeckillActivityAction")
@@ -53,12 +59,31 @@ public class SeckillActivityController {
         resultMap.put("seckillActivity", seckillActivity);
         return "add_success";
     }
+
     @RequestMapping("/seckills")
-    public String activityList(Map<String, Object> resultMap) { // resultMap 这个对象是谁初始化的？
+    public String activityList(Map<String, Object> resultMap) { // resultMap 这个参数对象是谁初始化的？
         List<SeckillActivity> seckillActivities =
                 seckillActivityDao.querySeckillActivitysByStatus(1);
-        // 这个query函数的返回list是在哪里做的？怎么把数据库的记录放到list中的？ 是SeckillActivityMapper.xml中的sql语句做的么？还是Mapper类做的？
+        // 这个querySeckillActivitysByStatus函数的返回List<SeckillActivity>是谁完成的？又是如何把数据库的记录放到List中的？
+        // 这里可以不可以把List换成其他Collection类？
         resultMap.put("seckillActivities", seckillActivities);
         return "seckill_activity";
+    }
+
+    @RequestMapping("/item/{seckillActivityId}")
+    public String itemPage(Map<String, Object> resultMap, @PathVariable long
+            seckillActivityId) {
+        SeckillActivity seckillActivity =
+                seckillActivityDao.querySeckillActivityById(seckillActivityId);
+        SeckillCommodity seckillCommodity =
+                seckillCommodityDao.querySeckillCommodityById(seckillActivity.getCommodityId());
+        resultMap.put("seckillActivity", seckillActivity);
+        resultMap.put("seckillCommodity", seckillCommodity);
+        resultMap.put("seckillPrice", seckillActivity.getSeckillPrice());
+        resultMap.put("oldPrice", seckillActivity.getOldPrice());
+        resultMap.put("commodityId", seckillActivity.getCommodityId());
+        resultMap.put("commodityName", seckillCommodity.getCommodityName());
+        resultMap.put("commodityDesc", seckillCommodity.getCommodityDesc());
+        return "seckill_item";
     }
 }
